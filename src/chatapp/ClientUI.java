@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.net.UnknownHostException;
 
 public class ClientUI extends JFrame {
 
@@ -58,33 +59,8 @@ public class ClientUI extends JFrame {
 		panel.add(portTextField);
 		portTextField.setColumns(10);
 		
-		final JTextArea textArea = new JTextArea();
-		textArea.setEditable(false);
-		
-		JButton btnConnect = new JButton("Connect");
-		btnConnect.setSelected(true);
-		btnConnect.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				client = new ChatClient(userNameTextField.getText().trim());
-				client.setOutputPanel(textArea);
-				client.setHasUI(true);
-				client.connectToServer(hostNameTextField.getText(), Integer.parseInt(portTextField.getText()));
-				Networking.sendData(userNameTextField.getText(), client.getSocket());
-				Thread t = new Thread(client);
-				t.start();
-			}
-		});
-		panel.add(btnConnect);
-
-		JScrollPane scrollPane = new JScrollPane();
-		contentPane.add(scrollPane, BorderLayout.CENTER);
-		scrollPane.setViewportView(textArea);
-		
-		JPanel panel_1 = new JPanel();
-		contentPane.add(panel_1, BorderLayout.SOUTH);
-		panel_1.setLayout(new BorderLayout(0, 0));
-		
 		final JTextArea sendMessageArea = new JTextArea();
+		sendMessageArea.setEnabled(false);
 		sendMessageArea.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -93,16 +69,68 @@ public class ClientUI extends JFrame {
 				sendTextToServer(sendMessageArea);
 			}
 		});
+		
+
+		JPanel panel_1 = new JPanel();
+		contentPane.add(panel_1, BorderLayout.SOUTH);
+		panel_1.setLayout(new BorderLayout(0, 0));
+		
 		sendMessageArea.setLineWrap(true);
 		panel_1.add(sendMessageArea);
 		
-		JButton btnSend = new JButton("Send");
+		final JButton btnSend = new JButton("Send");
+		btnSend.setEnabled(false);
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				sendTextToServer(sendMessageArea);
 			}
 		});
 		panel_1.add(btnSend, BorderLayout.EAST);
+		
+		final JTextArea txtrconnectToA = new JTextArea();
+		txtrconnectToA.append("Welcome! Connect to a server to begin chatting\n");
+		txtrconnectToA.setEditable(false);
+		
+		final JButton btnConnect = new JButton("Connect");
+		btnConnect.setSelected(true);
+		btnConnect.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				ChatClient client = buildClient(txtrconnectToA);
+				btnConnect.setEnabled(false);
+				try {
+					client.connectToServer(hostNameTextField.getText(), Integer.parseInt(portTextField.getText()));
+					Networking.sendData(userNameTextField.getText(), client.getSocket());
+				} catch (NumberFormatException e) {
+					alertFailedConnection(txtrconnectToA, btnConnect);
+					return;
+				} catch (UnknownHostException e) {
+					alertFailedConnection(txtrconnectToA, btnConnect);
+					return;
+				}
+				Thread t = new Thread(client);
+				t.start();
+				enableSendingMessages(sendMessageArea, btnSend, btnConnect);
+			}
+
+		});
+		panel.add(btnConnect);
+
+		JScrollPane scrollPane = new JScrollPane();
+		contentPane.add(scrollPane, BorderLayout.CENTER);
+		scrollPane.setViewportView(txtrconnectToA);
+		
+	}
+
+	private ChatClient buildClient(final JTextArea txtrconnectToA) {
+		client = new ChatClient(userNameTextField.getText().trim());
+		client.setOutputPanel(txtrconnectToA);
+		client.setHasUI(true);
+		return client;
+	}
+	
+	private void alertFailedConnection(final JTextArea txtrconnectToA, final JButton btnConnect) {
+		txtrconnectToA.append("Failed to connect to server");
+		btnConnect.setEnabled(true);
 	}
 
 	private void sendTextToServer(final JTextArea sendMessageArea) {
@@ -110,6 +138,16 @@ public class ClientUI extends JFrame {
 		message.setOwnerUserName(client.getUsername());
 		Networking.sendMessage(message, client.getSocket());
 		sendMessageArea.setText("");
+	}
+
+	private void enableSendingMessages(final JTextArea sendMessageArea, final JButton btnSend,
+			final JButton btnConnect) {
+		btnConnect.setEnabled(false);
+		portTextField.setEnabled(false);
+		userNameTextField.setEnabled(false);
+		hostNameTextField.setEnabled(false);
+		sendMessageArea.setEnabled(true);
+		btnSend.setEnabled(true);
 	}
 
 }

@@ -50,16 +50,18 @@ public class ChatClient implements Runnable{
 		}
 	}
 	
-	public void connectToServer(String hostName, int port){
+	public void connectToServer(String hostName, int port) throws UnknownHostException{
 		try {
 			socket = new Socket(hostName, port);
 			inputFromServer = socket.getInputStream();
 			outputToServer = socket.getOutputStream();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
+		
+		} catch (UnknownHostException e){
+			throw new UnknownHostException();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
-		} 
+		}
 	}
 	
 	public int getID() {

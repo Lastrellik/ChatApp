@@ -31,6 +31,7 @@ public class MessageHandler implements Runnable{
 				server.addMessage(message);
 			} catch (IOException e) {
 				e.printStackTrace();
+				return;
 			} 
 		}
 	}
