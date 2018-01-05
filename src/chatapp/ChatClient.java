@@ -36,7 +36,6 @@ public class ChatClient implements Runnable{
 		try {
 			if(!hasUI) return;
 			byte[] buffer = new byte[1024];
-			outputPanel.append(username + " has connected\n");
 			while(true){
 				inputFromServer.read(buffer);
 				String serializedMessage = new String(buffer).trim();
@@ -99,7 +98,5 @@ public class ChatClient implements Runnable{
 	public void setUsername(String username) {
 		this.username = username;
 	}
-	
-	
 	
 }
