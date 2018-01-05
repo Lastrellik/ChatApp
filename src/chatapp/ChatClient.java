@@ -41,7 +41,11 @@ public class ChatClient implements Runnable{
 				inputFromServer.read(buffer);
 				String serializedMessage = new String(buffer).trim();
 				Message deserializedMessage = Networking.deserializeMessage(serializedMessage);
-				outputPanel.append(deserializedMessage.getOwnerUserName() + ": " + deserializedMessage.getContents() + "\n");
+				if(deserializedMessage.getOwnerUserName() != null) {
+					outputPanel.append(deserializedMessage.getOwnerUserName() + ": " + deserializedMessage.getContents() + "\n");
+				} else {
+					outputPanel.append(deserializedMessage.getContents() + " has connected\n");
+				}
 				Arrays.fill(buffer, " ".getBytes()[0]);
 			}
 			

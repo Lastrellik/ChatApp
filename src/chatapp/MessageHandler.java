@@ -7,11 +7,11 @@ import com.google.gson.Gson;
 
 public class MessageHandler implements Runnable{
 	private InputStream inputFromServer;
-	private ChatServer server;
+	private ChatServer chatServer;
 	private Gson gson;
 	
 	public MessageHandler(Socket socket, ChatServer server){
-		this.server = server;
+		this.chatServer = server;
 		gson = new Gson();
 		try {
 			inputFromServer = socket.getInputStream();
@@ -28,7 +28,7 @@ public class MessageHandler implements Runnable{
 				inputFromServer.read(buffer);
 				if(buffer[0] != '{') continue;
 				Message message = gson.fromJson(new String(buffer).trim(),  Message.class);
-				server.addMessage(message);
+				chatServer.addMessage(message);
 			} catch (IOException e) {
 				e.printStackTrace();
 				return;

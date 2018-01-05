@@ -38,14 +38,11 @@ public class ChatServer implements Runnable{
 			Message currentMessage = messages.poll();
 			for(ChatClient chatClient : connectedClients){
 				if(currentMessage.isPublic() || currentMessage.getRecipientID() == chatClient.getID()) {
-					Networking.sendMessage(currentMessage, chatClient.getSocket());		
-					System.out.println(currentMessage.getContents());
+					Networking.sendMessage(currentMessage, chatClient.getSocket());	
 				}
 			}
 		}
 	}
-	
-	
 	
 	private void pause(int millis){
 		try {
