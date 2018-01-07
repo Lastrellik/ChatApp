@@ -135,6 +135,7 @@ public class ClientUI extends JFrame {
 
 	private void sendTextToServer(final JTextArea sendMessageArea) {
 		Message message = new Message(sendMessageArea.getText().trim());
+		message.setIsPublic(true);
 		message.setOwnerUserName(client.getUsername());
 		Networking.sendMessage(message, client.getSocket());
 		sendMessageArea.setText("");

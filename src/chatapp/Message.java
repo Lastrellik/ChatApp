@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 public class Message {
 	private String contents;
 	private int recipientID = 0;
+	private int senderID = 0;
 	private boolean isPublic = true;
 	private String ownerUserName;
 	
@@ -12,9 +13,10 @@ public class Message {
 		this.contents = contents;
 	}
 	
-	public Message(String contents, int recipientID){
+	public Message(String contents, int senderID, int recipientID){
 		this.contents = contents;
 		this.recipientID = recipientID;
+		this.senderID = senderID;
 		this.isPublic = false;
 	}
 
@@ -30,8 +32,20 @@ public class Message {
 		return recipientID;
 	}
 	
+	public int getSenderID() {
+		return senderID;
+	}
+
+	public void setSenderID(int senderID) {
+		this.senderID = senderID;
+	}
+
 	public boolean isPublic(){
 		return isPublic;
+	}
+	
+	public void setIsPublic(boolean isPublic){
+		this.isPublic = isPublic;
 	}
 
 	public String getOwnerUserName() {

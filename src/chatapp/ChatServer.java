@@ -2,17 +2,18 @@ package chatapp;
 
 import java.io.*;
 import java.net.*;
+import java.util.*;
 import java.util.concurrent.*;
 
 public class ChatServer implements Runnable{
 	private ServerSocket serverSocket;
-	private BlockingQueue<ChatClient> connectedClients;
+	private HashMap<Integer, ChatClient> connectedClients;
 	private BlockingQueue<Message> messages;
 	
 	public ChatServer(int port){
 		try {
 			serverSocket = new ServerSocket(port);
-			connectedClients = new LinkedBlockingQueue<>();
+			connectedClients = new HashMap<>();
 			messages = new LinkedBlockingQueue<>();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -36,12 +37,19 @@ public class ChatServer implements Runnable{
 	private void distributeMessages() {
 		while(hasNewMessage()){
 			Message currentMessage = messages.poll();
-			for(ChatClient chatClient : connectedClients){
+			for(ChatClient chatClient : connectedClients.values()){
 				if(currentMessage.isPublic() || currentMessage.getRecipientID() == chatClient.getID()) {
 					Networking.sendMessage(currentMessage, chatClient.getSocket());	
 				}
 			}
 		}
+	}
+	
+	public void disconnectClient(int clientID){
+		System.out.println("Disconnected with client ID: " + clientID);
+		String clientUserName = connectedClients.get(clientID).getUsername();
+		connectedClients.remove(clientID);
+		messages.add(new Message(clientUserName + " has disconnected"));
 	}
 	
 	private void pause(int millis){
@@ -65,7 +73,7 @@ public class ChatServer implements Runnable{
 	}
 	
 	public void addClient(ChatClient client){
-		connectedClients.add(client);		
+		connectedClients.put(client.getID(), client);
 	}
 
 	public ServerSocket getServerSocket() {

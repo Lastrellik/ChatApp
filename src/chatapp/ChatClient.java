@@ -17,7 +17,7 @@ public class ChatClient implements Runnable{
 	
 	public ChatClient(String username){
 		this.username = username;
-		this.ID = ClientHandler.getAndIncrementIDCounter();
+		System.out.println("Client created with ID: " + ID);
 	}
 	
 	public ChatClient(String username, Socket socket){

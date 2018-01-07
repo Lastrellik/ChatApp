@@ -14,20 +14,24 @@ public class ClientHandler implements Runnable{
 	@Override
 	public void run() {
 		try {
-			while (true){
-				Socket clientSocket = server.getServerSocket().accept();
-				ChatClient client = new ChatClient("ServerClient", clientSocket);
-				MessageHandler messageHandler = new MessageHandler(clientSocket, server);
-				server.addClient(client);
-				Thread clientThread = new Thread(client);
-				Thread messageHandlerThread = new Thread(messageHandler);
-				clientThread.start();
-				messageHandlerThread.start();
-			}
-			
+			handleIncomingClient();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}				
+	}
+
+	private void handleIncomingClient() throws IOException {
+		while (true){
+			Socket clientSocket = server.getServerSocket().accept(); //Blocks until a client connects
+			beginClientThread(clientSocket);
+			new Thread(new MessageHandler(clientSocket, server)).start();
+		}
+	}
+
+	private void beginClientThread(Socket clientSocket) {
+		ChatClient client = new ChatClient("Server", clientSocket);
+		server.addClient(client);
+		new Thread(client).start();
 	}
 
 	public static int getAndIncrementIDCounter() {
