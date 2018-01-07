@@ -100,10 +100,14 @@ public class ClientUI extends JFrame {
 				try {
 					client.connectToServer(hostNameTextField.getText(), Integer.parseInt(portTextField.getText()));
 					Networking.sendData(userNameTextField.getText(), client.getSocket());
+					int ID = Integer.parseInt(Networking.receiveData(client.getSocket()));
+					client.setID(ID);
 				} catch (NumberFormatException e) {
 					alertFailedConnection(txtrconnectToA, btnConnect);
+					e.printStackTrace();
 					return;
 				} catch (UnknownHostException e) {
+					e.printStackTrace();
 					alertFailedConnection(txtrconnectToA, btnConnect);
 					return;
 				}
@@ -129,7 +133,7 @@ public class ClientUI extends JFrame {
 	}
 	
 	private void alertFailedConnection(final JTextArea txtrconnectToA, final JButton btnConnect) {
-		txtrconnectToA.append("Failed to connect to server");
+		txtrconnectToA.append("Failed to connect to server\n");
 		btnConnect.setEnabled(true);
 	}
 

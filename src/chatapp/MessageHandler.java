@@ -29,7 +29,6 @@ public class MessageHandler implements Runnable{
 				inputFromServer.read(buffer);//blocks until input data is available
 				if(buffer[0] != '{') continue;
 				Message message = gson.fromJson(new String(buffer).trim(),  Message.class);
-				System.out.println(message);
 				disconnectedClientID = message.getSenderID();
 				chatServer.addMessage(message);
 			} catch (IOException e) {

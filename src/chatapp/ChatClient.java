@@ -6,7 +6,7 @@ import java.util.*;
 
 import javax.swing.JTextArea;
 
-public class ChatClient implements Runnable{
+public class ChatClient implements Runnable {
 	private InputStream inputFromServer;
 	private OutputStream outputToServer;
 	private Socket socket;
@@ -14,61 +14,59 @@ public class ChatClient implements Runnable{
 	private JTextArea outputPanel;
 	private boolean hasUI = false;
 	private String username;
-	
-	public ChatClient(String username){
-		this.username = username;
-		System.out.println("Client created with ID: " + ID);
-	}
-	
-	public ChatClient(String username, Socket socket){
-		this(username);
+
+	public ChatClient(int ID, Socket socket) {
+		this.ID = ID;
 		this.socket = socket;
 		try {
 			inputFromServer = socket.getInputStream();
-			outputToServer = socket.getOutputStream();	
-		} catch (IOException e) {
-			e.printStackTrace();
-		}	
-	}
-	
-	@Override
-	public void run() {
-		try {
-			if(!hasUI) return;
-			byte[] buffer = new byte[1024];
-			while(true){
-				inputFromServer.read(buffer);
-				String serializedMessage = new String(buffer).trim();
-				Message deserializedMessage = Networking.deserializeMessage(serializedMessage);
-				if(deserializedMessage.getOwnerUserName() != null) {
-					outputPanel.append(deserializedMessage.getOwnerUserName() + ": " + deserializedMessage.getContents() + "\n");
-				} else {
-					outputPanel.append(deserializedMessage.getContents() + " has connected\n");
-				}
-				Arrays.fill(buffer, " ".getBytes()[0]);
-			}
-			
+			outputToServer = socket.getOutputStream();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 	}
-	
-	public void connectToServer(String hostName, int port) throws UnknownHostException{
+
+	public ChatClient(String username) {
+		this.username = username;
+	}
+
+	@Override
+	public void run() {
+		if (!hasUI) return;
+		Networking.sendData(Integer.toString(getID()), getSocket());
+		System.out.println("sent ID: " + getID());
+		while (true) {
+			Message deserializedMessage = Networking.deserializeMessage(Networking.receiveData(socket));
+			if (deserializedMessage.getOwnerUserName() != null) {
+				outputPanel.append(
+						deserializedMessage.getOwnerUserName() + ": " + deserializedMessage.getContents() + "\n");
+			} else {
+				outputPanel.append(deserializedMessage.getContents() + " has connected\n");
+			}
+		}
+	}
+
+	public void connectToServer(String hostName, int port) throws UnknownHostException {
 		try {
 			socket = new Socket(hostName, port);
 			inputFromServer = socket.getInputStream();
 			outputToServer = socket.getOutputStream();
-		
-		} catch (UnknownHostException e){
+
+		} catch (UnknownHostException e) {
 			throw new UnknownHostException();
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public int getID() {
 		return ID;
+	}
+
+	public void setID(int ID) {
+		this.ID = ID;
 	}
 
 	public Socket getSocket() {
@@ -98,5 +96,4 @@ public class ChatClient implements Runnable{
 	public void setUsername(String username) {
 		this.username = username;
 	}
-	
 }

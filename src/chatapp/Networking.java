@@ -1,6 +1,8 @@
 package chatapp;
 
 import java.net.Socket;
+import java.util.Arrays;
+
 import com.google.gson.Gson;
 import java.io.*;
 
@@ -19,6 +21,16 @@ public class Networking {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static String receiveData(Socket dataSocket){
+		byte[] messageBuffer = new byte[1024];
+		try {
+			dataSocket.getInputStream().read(messageBuffer);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return new String(messageBuffer).trim();
 	}
 	
 	public static Message deserializeMessage(String serializedData){

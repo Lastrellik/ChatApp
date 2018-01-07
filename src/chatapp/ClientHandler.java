@@ -29,7 +29,7 @@ public class ClientHandler implements Runnable{
 	}
 
 	private void beginClientThread(Socket clientSocket) {
-		ChatClient client = new ChatClient("Server", clientSocket);
+		ChatClient client = new ChatClient(getAndIncrementIDCounter(), clientSocket);
 		server.addClient(client);
 		new Thread(client).start();
 	}
