@@ -9,7 +9,7 @@ public class ChatClient implements Runnable {
 	private OutputStream outputToServer;
 	private Socket socket;
 	private int ID;
-	private JTextArea outputPanel;
+	private ClientUI clientUI;
 	private boolean hasUI = false;
 	private String username;
 
@@ -31,6 +31,23 @@ public class ChatClient implements Runnable {
 			e.printStackTrace();
 		}		
 	}
+	
+	public void connectToServer(String hostname, int port) throws IOException{
+		setSocket(Networking.connectToServer(hostname, port));
+		initializeOutputStream();
+	}
+	
+
+	//The client sends the username to register with the server and gets a unique ID in return
+	public void registerWithServer(String username){
+		Networking.sendData(username, getSocket());
+		int ID = Integer.parseInt(Networking.deserializeMessage(Networking.receiveData(getSocket())).getContents());
+		setID(ID);		
+	}
+	
+	public void beginThread(){
+		new Thread(this).start();
+	}
 
 	@Override
 	public void run() {
@@ -39,10 +56,10 @@ public class ChatClient implements Runnable {
 		while (true) {
 			Message deserializedMessage = Networking.deserializeMessage(Networking.receiveData(socket));
 			if (deserializedMessage.getOwnerUserName() != null) {
-				outputPanel.append(
-						deserializedMessage.getOwnerUserName() + ": " + deserializedMessage.getContents() + "\n");
+				clientUI.appendToOutput(deserializedMessage.getOwnerUserName() + ": " + 
+										deserializedMessage.getContents() + "\n");
 			} else {
-				outputPanel.append(deserializedMessage.getContents() + "\n");
+				clientUI.appendToOutput(deserializedMessage.getContents() + "\n");
 			}
 		}
 	}
@@ -67,8 +84,9 @@ public class ChatClient implements Runnable {
 		return outputToServer;
 	}
 
-	public void setOutputPanel(JTextArea outputPanel) {
-		this.outputPanel = outputPanel;
+	public void setUI(ClientUI UI) {
+		this.clientUI = UI;
+		setHasUI(true);
 	}
 
 	public boolean isHasUI() {

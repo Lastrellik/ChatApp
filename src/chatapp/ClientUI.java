@@ -1,10 +1,10 @@
 package chatapp;
 
 import java.awt.*;
+
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.event.*;
-import java.io.IOException;
 
 public class ClientUI extends JFrame {
 
@@ -16,14 +16,43 @@ public class ClientUI extends JFrame {
 	private JTextField userNameTextField;
 	private JTextField hostNameTextField;
 	private JTextField portTextField;
+	private JTextArea messageArea;
 	private ChatClient client;
 
 	/**
 	 * Create the frame.
 	 */
 	public ClientUI() {
+		setTitle("ChatApp");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 420);
+		setLocationRelativeTo(null);
+		
+		JMenuBar menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		
+		JMenu connectionMenu = new JMenu("Connections");
+		menuBar.add(connectionMenu);
+		
+		JMenuItem connectMenuItem = new JMenuItem("Connect");
+		connectMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				ConnectUI connectUI = new ConnectUI();
+				connectUI.setLocationRelativeTo((Component) arg0.getSource());
+				connectUI.setVisible(true);
+				
+			}
+		});
+		connectionMenu.add(connectMenuItem);
+		
+		JMenuItem disconnectMenuItem = new JMenuItem("Disconnect");
+		connectionMenu.add(disconnectMenuItem);
+		
+		JSeparator separator = new JSeparator();
+		connectionMenu.add(separator);
+		
+		JMenuItem quitMenuItem = new JMenuItem("Quit");
+		connectionMenu.add(quitMenuItem);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -84,26 +113,26 @@ public class ClientUI extends JFrame {
 		});
 		chatInputPanel.add(btnSend, BorderLayout.EAST);
 		
-		final JTextArea txtrconnectToA = new JTextArea();
-		txtrconnectToA.setLineWrap(true);
-		txtrconnectToA.append("Welcome! Connect to a server to begin chatting\n");
-		txtrconnectToA.setEditable(false);
+		messageArea = new JTextArea();
+		messageArea.setLineWrap(true);
+		messageArea.append("Welcome! Connect to a server to begin chatting\n");
+		messageArea.setEditable(false);
 		
 		final JButton btnConnect = new JButton("Connect");
 		btnConnect.setSelected(true);
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				ChatClient client = buildClient(txtrconnectToA);
+				ChatClient client = buildClient(userNameTextField.getText().trim());
 				btnConnect.setEnabled(false);
 				try {
-					initializeClientSocket(client);
+					client.connectToServer(hostNameTextField.getText(), Integer.parseInt(portTextField.getText()));
+					client.registerWithServer(userNameTextField.getText());
+					client.beginThread();
 				} catch (Exception e) {
-					alertFailedConnection(txtrconnectToA, btnConnect);
+					alertFailedConnection(messageArea, btnConnect);
 					e.printStackTrace();
 					return;
 				} 
-				registerClientWithServer(client);
-				beginClientThread(client);
 				enableSendingMessages(sendMessageArea, btnSend, btnConnect);
 			}
 
@@ -112,40 +141,24 @@ public class ClientUI extends JFrame {
 
 		JScrollPane scrollPane = new JScrollPane();
 		contentPane.add(scrollPane, BorderLayout.CENTER);
-		scrollPane.setViewportView(txtrconnectToA);
+		scrollPane.setViewportView(messageArea);
 		new SmartScroller(scrollPane);
 		
 	}
 	
-	private ChatClient buildClient(final JTextArea txtrconnectToA) {
-		client = new ChatClient(userNameTextField.getText().trim());
-		client.setOutputPanel(txtrconnectToA);
-		client.setHasUI(true);
+	private ChatClient buildClient(String username) {
+		client = new ChatClient(username);
+		client.setUI(this);
 		return client;
 	}
-
-	private void initializeClientSocket(ChatClient client)
-			throws IOException {
-		client.setSocket(Networking.connectToServer(hostNameTextField.getText(), 
-				Integer.parseInt(portTextField.getText())));
-		client.initializeOutputStream();
+	
+	public void appendToOutput(String outputMessage){
+		messageArea.append(outputMessage);
 	}
 	
 	private void alertFailedConnection(final JTextArea txtrconnectToA, final JButton btnConnect) {
 		txtrconnectToA.append("Failed to connect to server\n");
 		btnConnect.setEnabled(true);
-	}
-	
-	//The client sends the username to register with the server and gets a unique ID in return
-	private void registerClientWithServer(ChatClient client) {
-		Networking.sendData(userNameTextField.getText(), client.getSocket());
-		int ID = Integer.parseInt(Networking.deserializeMessage(Networking.receiveData(client.getSocket())).getContents());
-		client.setID(ID);
-	}
-
-	private void beginClientThread(ChatClient client) {
-		Thread t = new Thread(client);
-		t.start();
 	}
 
 	private void sendTextToServer(final JTextArea sendMessageArea) {
