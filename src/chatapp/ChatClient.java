@@ -3,7 +3,6 @@ package chatapp;
 import java.io.*;
 import java.net.*;
 
-import javax.swing.JTextArea;
 
 public class ChatClient implements Runnable {
 	private OutputStream outputToServer;
@@ -37,12 +36,23 @@ public class ChatClient implements Runnable {
 		initializeOutputStream();
 	}
 	
+	public void disconnectFromServer(){
+		Networking.disconnectFromServer(socket);
+	}
+	
 
 	//The client sends the username to register with the server and gets a unique ID in return
 	public void registerWithServer(String username){
 		Networking.sendData(username, getSocket());
-		int ID = Integer.parseInt(Networking.deserializeMessage(Networking.receiveData(getSocket())).getContents());
-		setID(ID);		
+		try {
+			setID(Integer.parseInt(Networking.deserializeMessage(Networking.receiveData(getSocket())).getContents()));
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 	}
 	
 	public void beginThread(){
@@ -54,12 +64,17 @@ public class ChatClient implements Runnable {
 		if (!hasUI) return;
 		Networking.sendData(username + " has connected", socket);
 		while (true) {
-			Message deserializedMessage = Networking.deserializeMessage(Networking.receiveData(socket));
-			if (deserializedMessage.getOwnerUserName() != null) {
-				clientUI.appendToOutput(deserializedMessage.getOwnerUserName() + ": " + 
-										deserializedMessage.getContents() + "\n");
-			} else {
-				clientUI.appendToOutput(deserializedMessage.getContents() + "\n");
+			try{
+				Message deserializedMessage = Networking.deserializeMessage(Networking.receiveData(socket));
+				if (deserializedMessage.getOwnerUserName() != null) {
+					clientUI.appendToOutput(deserializedMessage.getOwnerUserName() + ": " + 
+											deserializedMessage.getContents() + "\n");
+				} else {
+					clientUI.appendToOutput(deserializedMessage.getContents() + "\n");
+				}
+			} catch (SocketException s){
+				clientUI.appendToOutput("Disconnected from the server\n");
+				return;
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package chatapp;
 
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import com.google.gson.Gson;
@@ -23,10 +24,12 @@ public class Networking {
 		}
 	}
 	
-	public static String receiveData(Socket dataSocket){
+	public static String receiveData(Socket dataSocket) throws SocketException{
 		byte[] messageBuffer = new byte[1024];
 		try {
 			dataSocket.getInputStream().read(messageBuffer);
+		} catch (SocketException s) {
+			throw new SocketException();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -50,5 +53,13 @@ public class Networking {
 			throw new IOException();
 		}
 		return socket;
+	}
+	
+	public static void disconnectFromServer(Socket socket){
+		try {
+			socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
