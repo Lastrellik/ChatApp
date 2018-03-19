@@ -96,7 +96,6 @@ public class ConnectUI extends JFrame {
 				clientUI.initializeClient(txtUsername.getText().trim(), 
 									      txtServerAddress.getText().trim(), 
 									      Integer.parseInt(textServerPort.getText().trim()));
-				clientUI.enableSendingMessages();
 				dispose();
 			}
 		});

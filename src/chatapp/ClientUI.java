@@ -55,6 +55,11 @@ public class ClientUI extends JFrame {
 		connectionMenu.add(separator);
 		
 		JMenuItem quitMenuItem = new JMenuItem("Quit");
+		quitMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				System.exit(0);
+			}
+		});
 		connectionMenu.add(quitMenuItem);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -113,6 +118,7 @@ public class ClientUI extends JFrame {
 			client.connectToServer(hostname, port);
 			client.registerWithServer(username);
 			client.beginThread();
+			enableSendingMessages();
 		} catch (Exception e) {
 			alertFailedConnection(messageArea);
 			e.printStackTrace();
@@ -132,6 +138,7 @@ public class ClientUI extends JFrame {
 	
 	private void alertFailedConnection(final JTextArea txtrconnectToA) {
 		txtrconnectToA.append("Failed to connect to server\n");
+		disableSendingMessages();
 	}
 
 	private void sendTextToServer(final JTextArea sendMessageArea) {
