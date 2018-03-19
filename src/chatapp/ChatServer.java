@@ -48,7 +48,6 @@ public class ChatServer implements Runnable{
 	public void disconnectClient(int clientID){
 		ChatClient disconnectedClient = connectedClients.get(clientID);
 		String username = disconnectedClient.getUsername();
-		System.out.println(username + " has disconnected");
 		messages.add(new Message(username + " has disconnected"));
 		connectedClients.remove(clientID);
 	}

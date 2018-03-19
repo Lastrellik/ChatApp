@@ -36,7 +36,8 @@ public class MessageHandler implements Runnable{
 				Message message = gson.fromJson(new String(buffer).trim(),  Message.class);
 				chatServer.addMessage(message);
 			} catch (IOException e) {
-				e.printStackTrace();
+				chatServer.disconnectClient(clientID);
+				return;
 			}
 		}
 	}
