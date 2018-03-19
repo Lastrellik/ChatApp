@@ -3,10 +3,7 @@ package chatapp;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.net.UnknownHostException;
 
 public class ClientUI extends JFrame {
@@ -32,31 +29,31 @@ public class ClientUI extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 		
-		JPanel panel = new JPanel();
-		contentPane.add(panel, BorderLayout.NORTH);
+		JPanel connectionPanel = new JPanel();
+		contentPane.add(connectionPanel, BorderLayout.NORTH);
 		
 		JLabel lblDesiredUsername = new JLabel("Desired Username:");
-		panel.add(lblDesiredUsername);
+		connectionPanel.add(lblDesiredUsername);
 		
 		userNameTextField = new JTextField();
 		userNameTextField.setText("Test");
-		panel.add(userNameTextField);
+		connectionPanel.add(userNameTextField);
 		userNameTextField.setColumns(10);
 		
 		JLabel lblHostname = new JLabel("Hostname:");
-		panel.add(lblHostname);
+		connectionPanel.add(lblHostname);
 		
 		hostNameTextField = new JTextField();
 		hostNameTextField.setText("lastrellik.noip.me");
-		panel.add(hostNameTextField);
+		connectionPanel.add(hostNameTextField);
 		hostNameTextField.setColumns(10);
 		
 		JLabel lblPort = new JLabel("Port: ");
-		panel.add(lblPort);
+		connectionPanel.add(lblPort);
 		
 		portTextField = new JTextField();
 		portTextField.setText("8000");
-		panel.add(portTextField);
+		connectionPanel.add(portTextField);
 		portTextField.setColumns(10);
 		
 		final JTextArea sendMessageArea = new JTextArea();
@@ -71,12 +68,12 @@ public class ClientUI extends JFrame {
 		});
 		
 
-		JPanel panel_1 = new JPanel();
-		contentPane.add(panel_1, BorderLayout.SOUTH);
-		panel_1.setLayout(new BorderLayout(0, 0));
+		JPanel chatInputPanel = new JPanel();
+		contentPane.add(chatInputPanel, BorderLayout.SOUTH);
+		chatInputPanel.setLayout(new BorderLayout(0, 0));
 		
 		sendMessageArea.setLineWrap(true);
-		panel_1.add(sendMessageArea);
+		chatInputPanel.add(sendMessageArea);
 		
 		final JButton btnSend = new JButton("Send");
 		btnSend.setEnabled(false);
@@ -85,9 +82,10 @@ public class ClientUI extends JFrame {
 				sendTextToServer(sendMessageArea);
 			}
 		});
-		panel_1.add(btnSend, BorderLayout.EAST);
+		chatInputPanel.add(btnSend, BorderLayout.EAST);
 		
 		final JTextArea txtrconnectToA = new JTextArea();
+		txtrconnectToA.setLineWrap(true);
 		txtrconnectToA.append("Welcome! Connect to a server to begin chatting\n");
 		txtrconnectToA.setEditable(false);
 		
@@ -117,11 +115,12 @@ public class ClientUI extends JFrame {
 			}
 
 		});
-		panel.add(btnConnect);
+		connectionPanel.add(btnConnect);
 
 		JScrollPane scrollPane = new JScrollPane();
 		contentPane.add(scrollPane, BorderLayout.CENTER);
 		scrollPane.setViewportView(txtrconnectToA);
+		new SmartScroller(scrollPane);
 		
 	}
 
