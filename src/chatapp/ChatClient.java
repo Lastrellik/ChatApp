@@ -17,15 +17,19 @@ public class ChatClient implements Runnable {
 		this.username = username;
 		this.ID = ID;
 		this.socket = socket;
-		try {
-			outputToServer = socket.getOutputStream();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		initializeOutputStream();
 	}
 
 	public ChatClient(String username) {
 		this.username = username;
+	}
+	
+	public void initializeOutputStream(){
+		try {
+			outputToServer = socket.getOutputStream();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
 	}
 
 	@Override
@@ -43,19 +47,6 @@ public class ChatClient implements Runnable {
 		}
 	}
 
-	public void connectToServer(String hostName, int port) throws UnknownHostException {
-		try {
-			socket = new Socket(hostName, port);
-			outputToServer = socket.getOutputStream();
-			
-		} catch (UnknownHostException e) {
-			throw new UnknownHostException();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	public int getID() {
 		return ID;
 	}
@@ -66,6 +57,10 @@ public class ChatClient implements Runnable {
 
 	public Socket getSocket() {
 		return socket;
+	}
+	
+	public void setSocket(Socket socket){
+		this.socket = socket;
 	}
 
 	public OutputStream getOutputStream() {

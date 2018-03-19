@@ -4,7 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.event.*;
-import java.net.UnknownHostException;
+import java.io.IOException;
 
 public class ClientUI extends JFrame {
 
@@ -96,21 +96,14 @@ public class ClientUI extends JFrame {
 				ChatClient client = buildClient(txtrconnectToA);
 				btnConnect.setEnabled(false);
 				try {
-					client.connectToServer(hostNameTextField.getText(), Integer.parseInt(portTextField.getText()));
-					Networking.sendData(userNameTextField.getText(), client.getSocket());
-					int ID = Integer.parseInt(Networking.deserializeMessage(Networking.receiveData(client.getSocket())).getContents());
-					client.setID(ID);
-				} catch (NumberFormatException e) {
+					initializeClientSocket(client);
+				} catch (Exception e) {
 					alertFailedConnection(txtrconnectToA, btnConnect);
 					e.printStackTrace();
 					return;
-				} catch (UnknownHostException e) {
-					e.printStackTrace();
-					alertFailedConnection(txtrconnectToA, btnConnect);
-					return;
-				}
-				Thread t = new Thread(client);
-				t.start();
+				} 
+				registerClientWithServer(client);
+				beginClientThread(client);
 				enableSendingMessages(sendMessageArea, btnSend, btnConnect);
 			}
 
@@ -123,17 +116,36 @@ public class ClientUI extends JFrame {
 		new SmartScroller(scrollPane);
 		
 	}
-
+	
 	private ChatClient buildClient(final JTextArea txtrconnectToA) {
 		client = new ChatClient(userNameTextField.getText().trim());
 		client.setOutputPanel(txtrconnectToA);
 		client.setHasUI(true);
 		return client;
 	}
+
+	private void initializeClientSocket(ChatClient client)
+			throws IOException {
+		client.setSocket(Networking.connectToServer(hostNameTextField.getText(), 
+				Integer.parseInt(portTextField.getText())));
+		client.initializeOutputStream();
+	}
 	
 	private void alertFailedConnection(final JTextArea txtrconnectToA, final JButton btnConnect) {
 		txtrconnectToA.append("Failed to connect to server\n");
 		btnConnect.setEnabled(true);
+	}
+	
+	//The client sends the username to register with the server and gets a unique ID in return
+	private void registerClientWithServer(ChatClient client) {
+		Networking.sendData(userNameTextField.getText(), client.getSocket());
+		int ID = Integer.parseInt(Networking.deserializeMessage(Networking.receiveData(client.getSocket())).getContents());
+		client.setID(ID);
+	}
+
+	private void beginClientThread(ChatClient client) {
+		Thread t = new Thread(client);
+		t.start();
 	}
 
 	private void sendTextToServer(final JTextArea sendMessageArea) {

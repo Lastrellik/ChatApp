@@ -1,6 +1,7 @@
 package chatapp;
 
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import com.google.gson.Gson;
 import java.io.*;
@@ -35,5 +36,19 @@ public class Networking {
 	public static Message deserializeMessage(String serializedData){
 		Gson gson = new Gson();
 		return gson.fromJson(serializedData, Message.class);
+	}
+	
+	public static Socket connectToServer(String hostName, int port) throws IOException {
+		Socket socket = null;
+		try {
+			socket = new Socket(hostName, port);
+			
+		} catch (UnknownHostException e) {
+			throw new UnknownHostException();
+
+		} catch (IOException e) {
+			throw new IOException();
+		}
+		return socket;
 	}
 }
