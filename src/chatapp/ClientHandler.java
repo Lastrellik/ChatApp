@@ -23,13 +23,16 @@ public class ClientHandler implements Runnable{
 	private void handleIncomingClient() throws IOException {
 		while (true){
 			Socket clientSocket = server.getServerSocket().accept(); //Blocks until a client connects
-			beginClientThread(clientSocket);
-			new Thread(new MessageHandler(clientSocket, server)).start();
+			String userName = Networking.deserializeMessage(Networking.receiveData(clientSocket)).getContents();
+			int newClientID = getAndIncrementIDCounter();
+			Networking.sendData(String.valueOf(newClientID), clientSocket);
+			beginClientThread(userName, clientSocket, newClientID);
+			new Thread(new MessageHandler(newClientID, clientSocket, server)).start();
 		}
 	}
 
-	private void beginClientThread(Socket clientSocket) {
-		ChatClient client = new ChatClient(getAndIncrementIDCounter(), clientSocket);
+	private void beginClientThread(String userName, Socket clientSocket, int clientID) {
+		ChatClient client = new ChatClient(userName, clientID, clientSocket);
 		server.addClient(client);
 		new Thread(client).start();
 	}

@@ -39,17 +39,18 @@ public class ChatServer implements Runnable{
 			Message currentMessage = messages.poll();
 			for(ChatClient chatClient : connectedClients.values()){
 				if(currentMessage.isPublic() || currentMessage.getRecipientID() == chatClient.getID()) {
-					Networking.sendMessage(currentMessage, chatClient.getSocket());	
+					Networking.sendMessage(currentMessage, chatClient.getSocket());
 				}
 			}
 		}
 	}
 	
 	public void disconnectClient(int clientID){
-		System.out.println("Disconnected with client ID: " + clientID);
-		String clientUserName = connectedClients.get(clientID).getUsername();
+		ChatClient disconnectedClient = connectedClients.get(clientID);
+		String username = disconnectedClient.getUsername();
+		System.out.println(username + " has disconnected");
+		messages.add(new Message(username + " has disconnected"));
 		connectedClients.remove(clientID);
-		messages.add(new Message(clientUserName + " has disconnected"));
 	}
 	
 	private void pause(int millis){

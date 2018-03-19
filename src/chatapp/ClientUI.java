@@ -26,7 +26,7 @@ public class ClientUI extends JFrame {
 	 */
 	public ClientUI() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 725, 420);
+		setBounds(100, 100, 800, 420);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -100,7 +100,7 @@ public class ClientUI extends JFrame {
 				try {
 					client.connectToServer(hostNameTextField.getText(), Integer.parseInt(portTextField.getText()));
 					Networking.sendData(userNameTextField.getText(), client.getSocket());
-					int ID = Integer.parseInt(Networking.receiveData(client.getSocket()));
+					int ID = Integer.parseInt(Networking.deserializeMessage(Networking.receiveData(client.getSocket())).getContents());
 					client.setID(ID);
 				} catch (NumberFormatException e) {
 					alertFailedConnection(txtrconnectToA, btnConnect);

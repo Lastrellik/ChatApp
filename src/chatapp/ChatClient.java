@@ -2,12 +2,10 @@ package chatapp;
 
 import java.io.*;
 import java.net.*;
-import java.util.*;
 
 import javax.swing.JTextArea;
 
 public class ChatClient implements Runnable {
-	private InputStream inputFromServer;
 	private OutputStream outputToServer;
 	private Socket socket;
 	private int ID;
@@ -15,16 +13,15 @@ public class ChatClient implements Runnable {
 	private boolean hasUI = false;
 	private String username;
 
-	public ChatClient(int ID, Socket socket) {
+	public ChatClient(String username, int ID, Socket socket) {
+		this.username = username;
 		this.ID = ID;
 		this.socket = socket;
 		try {
-			inputFromServer = socket.getInputStream();
 			outputToServer = socket.getOutputStream();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public ChatClient(String username) {
@@ -34,15 +31,14 @@ public class ChatClient implements Runnable {
 	@Override
 	public void run() {
 		if (!hasUI) return;
-		Networking.sendData(Integer.toString(getID()), getSocket());
-		System.out.println("sent ID: " + getID());
+		Networking.sendData(username + " has connected", socket);
 		while (true) {
 			Message deserializedMessage = Networking.deserializeMessage(Networking.receiveData(socket));
 			if (deserializedMessage.getOwnerUserName() != null) {
 				outputPanel.append(
 						deserializedMessage.getOwnerUserName() + ": " + deserializedMessage.getContents() + "\n");
 			} else {
-				outputPanel.append(deserializedMessage.getContents() + " has connected\n");
+				outputPanel.append(deserializedMessage.getContents() + "\n");
 			}
 		}
 	}
@@ -50,9 +46,8 @@ public class ChatClient implements Runnable {
 	public void connectToServer(String hostName, int port) throws UnknownHostException {
 		try {
 			socket = new Socket(hostName, port);
-			inputFromServer = socket.getInputStream();
 			outputToServer = socket.getOutputStream();
-
+			
 		} catch (UnknownHostException e) {
 			throw new UnknownHostException();
 

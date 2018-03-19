@@ -9,8 +9,10 @@ public class MessageHandler implements Runnable{
 	private InputStream inputFromServer;
 	private ChatServer chatServer;
 	private Gson gson;
+	private int clientID;
 	
-	public MessageHandler(Socket socket, ChatServer server){
+	public MessageHandler(int clientID, Socket socket, ChatServer server){
+		this.clientID = clientID;
 		this.chatServer = server;
 		gson = new Gson();
 		try {
@@ -22,20 +24,20 @@ public class MessageHandler implements Runnable{
 
 	@Override
 	public void run() {
-		int disconnectedClientID = 0;
 		while(true){
 			try {
 				byte[] buffer = new byte[1024];
-				inputFromServer.read(buffer);//blocks until input data is available
+				int returnCode = inputFromServer.read(buffer);//blocks until input data is available
+				if (returnCode == -1){//client has disconnected
+					chatServer.disconnectClient(clientID);
+					return;
+				}
 				if(buffer[0] != '{') continue;
 				Message message = gson.fromJson(new String(buffer).trim(),  Message.class);
-				disconnectedClientID = message.getSenderID();
 				chatServer.addMessage(message);
 			} catch (IOException e) {
-				chatServer.disconnectClient(disconnectedClientID);
 				e.printStackTrace();
-				return;
-			} 
+			}
 		}
 	}
 
