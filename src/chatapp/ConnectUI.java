@@ -23,7 +23,6 @@ public class ConnectUI extends JFrame {
 	private JTextField txtServerAddress;
 	private JTextField textServerPort;
 	private JTextField txtUsername;
-	private ClientUI clientUI;
 
 	/**
 	 * Launch the application.
@@ -45,7 +44,6 @@ public class ConnectUI extends JFrame {
 	 * Create the frame.
 	 */
 	public ConnectUI(final ClientUI clientUI) {
-		this.clientUI = clientUI;
 		setTitle("Connect");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 362, 173);
