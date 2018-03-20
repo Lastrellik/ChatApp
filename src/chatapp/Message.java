@@ -7,6 +7,7 @@ public class Message {
 	private int recipientID = 0;
 	private int senderID = 0;
 	private boolean isPublic = true;
+	private boolean isUpdateFromServer = false;
 	private String ownerUserName;
 	
 	public Message(String contents){
@@ -46,6 +47,14 @@ public class Message {
 	
 	public void setIsPublic(boolean isPublic){
 		this.isPublic = isPublic;
+	}
+	
+	public boolean isUpdateFromServer() {
+		return isUpdateFromServer;
+	}
+
+	public void setUpdateFromServer(boolean isUpdateFromServer) {
+		this.isUpdateFromServer = isUpdateFromServer;
 	}
 
 	public String getOwnerUserName() {

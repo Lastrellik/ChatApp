@@ -50,6 +50,9 @@ public class ChatServer implements Runnable{
 		String username = disconnectedClient.getUsername();
 		messages.add(new Message(username + " has disconnected"));
 		connectedClients.remove(clientID);
+		Message disconnectMessage = new Message("-" + username);
+		disconnectMessage.setUpdateFromServer(true);
+		messages.add(disconnectMessage);
 	}
 	
 	private void pause(int millis){

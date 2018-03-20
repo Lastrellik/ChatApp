@@ -11,6 +11,7 @@ public class ChatClient implements Runnable {
 	private ClientUI clientUI;
 	private boolean hasUI = false;
 	private String username;
+	private UserTableModel userTableModel;
 
 	public ChatClient(String username, int ID, Socket socket) {
 		this.username = username;
@@ -66,6 +67,16 @@ public class ChatClient implements Runnable {
 		while (true) {
 			try{
 				Message deserializedMessage = Networking.deserializeMessage(Networking.receiveData(socket));
+				if (deserializedMessage.isUpdateFromServer()){
+					String message = deserializedMessage.getContents();
+					if (message.startsWith("-")){
+						userTableModel.removeRow(message.substring(1));
+					}
+					if (message.startsWith("+")){
+						userTableModel.addRow(message.substring(1));
+					}
+					continue;
+				}
 				if (deserializedMessage.getOwnerUserName() != null) {
 					clientUI.appendToOutput(deserializedMessage.getOwnerUserName() + ": " + 
 											deserializedMessage.getContents() + "\n");
@@ -119,4 +130,14 @@ public class ChatClient implements Runnable {
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
+	public UserTableModel getUserTableModel() {
+		return userTableModel;
+	}
+
+	public void setUserTableModel(UserTableModel userTableModel) {
+		this.userTableModel = userTableModel;
+	}
+	
+	
 }

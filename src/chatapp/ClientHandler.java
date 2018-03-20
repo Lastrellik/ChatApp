@@ -28,6 +28,9 @@ public class ClientHandler implements Runnable{
 			Networking.sendData(String.valueOf(newClientID), clientSocket);
 			beginClientThread(userName, clientSocket, newClientID);
 			new Thread(new MessageHandler(newClientID, clientSocket, server)).start();
+			Message message = new Message("+" + userName);
+			message.setUpdateFromServer(true);
+			server.addMessage(message);
 		}
 	}
 

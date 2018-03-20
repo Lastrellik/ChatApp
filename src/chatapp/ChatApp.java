@@ -12,7 +12,7 @@ public class ChatApp {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		//beginClientUI();
+		beginClientUI();
 	}
 	
 	private static void beginServer(){

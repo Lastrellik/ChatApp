@@ -4,6 +4,7 @@ import java.awt.*;
 
 import javax.swing.*;
 import javax.swing.border.*;
+
 import java.awt.event.*;
 
 public class ClientUI extends JFrame {
@@ -17,11 +18,14 @@ public class ClientUI extends JFrame {
 	private JTextArea messageArea;
 	private JButton btnSend;
 	private ChatClient client;
+	private JTable table;
+	private UserTableModel userTableModel;
 
 	/**
 	 * Create the frame.
 	 */
 	public ClientUI() {
+		setBackground(Color.WHITE);
 		setTitle("ChatApp");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 420);
@@ -62,6 +66,7 @@ public class ClientUI extends JFrame {
 		});
 		connectionMenu.add(quitMenuItem);
 		contentPane = new JPanel();
+		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
@@ -100,9 +105,21 @@ public class ClientUI extends JFrame {
 		messageArea.setEditable(false);
 
 		JScrollPane scrollPane = new JScrollPane();
-		contentPane.add(scrollPane, BorderLayout.CENTER);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setViewportView(messageArea);
+		contentPane.add(scrollPane, BorderLayout.CENTER);
 		new SmartScroller(scrollPane);
+
+		userTableModel = new UserTableModel();
+		table = new JTable(userTableModel);
+		table.setShowGrid(false);
+		table.setTableHeader(null);
+		JScrollPane userScrollPane = new JScrollPane(table);
+		userScrollPane.getViewport().setBackground(Color.WHITE);
+		userScrollPane.setPreferredSize(new Dimension(150, 0));
+		userScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		contentPane.add(userScrollPane, BorderLayout.EAST);
+
 		
 	}
 	
@@ -129,6 +146,7 @@ public class ClientUI extends JFrame {
 	private ChatClient buildClient(String username) {
 		client = new ChatClient(username);
 		client.setUI(this);
+		client.setUserTableModel(userTableModel);
 		return client;
 	}
 	
