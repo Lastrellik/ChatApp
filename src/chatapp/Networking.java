@@ -1,10 +1,7 @@
 package chatapp;
 
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-
-import com.google.gson.Gson;
+import java.net.*;
+import com.google.gson.*;
 import java.io.*;
 
 public class Networking {
@@ -36,9 +33,15 @@ public class Networking {
 		return new String(messageBuffer).trim();
 	}
 	
-	public static Message deserializeMessage(String serializedData){
-		Gson gson = new Gson();
-		return gson.fromJson(serializedData, Message.class);
+	public static Message deserializeMessage(String serializedData) throws JsonSyntaxException{
+		Message message = new Message("");
+		try{
+			Gson gson = new Gson();
+			message = gson.fromJson(serializedData, Message.class);
+		} catch (JsonSyntaxException j){//data wasn't a message
+			throw new JsonSyntaxException("Connecting user wasn't a chat client");
+		}
+		return message;
 	}
 	
 	public static Socket connectToServer(String hostName, int port) throws IOException {

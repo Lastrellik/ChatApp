@@ -3,6 +3,8 @@ package chatapp;
 import java.io.*;
 import java.net.*;
 
+import com.google.gson.JsonSyntaxException;
+
 public class ClientHandler implements Runnable{
 	private ChatServer server;
 	static int clientUniqueID = 0;
@@ -23,7 +25,14 @@ public class ClientHandler implements Runnable{
 	private void handleIncomingClient() throws IOException {
 		while (true){
 			Socket clientSocket = server.getServerSocket().accept(); //Blocks until a client connects
-			String userName = Networking.deserializeMessage(Networking.receiveData(clientSocket)).getContents();
+			String receivedData = Networking.receiveData(clientSocket);
+			String userName = "";
+			try{
+				userName = Networking.deserializeMessage(receivedData).getContents();
+			} catch (JsonSyntaxException j){ //Throws when connecting user isn't a chat client.
+				System.err.println("Rejected socket: " + receivedData);
+				continue;
+			}
 			int newClientID = getAndIncrementIDCounter();
 			Networking.sendData(String.valueOf(newClientID), clientSocket);
 			ChatClient client = new ChatClient(userName, newClientID, clientSocket);
