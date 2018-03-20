@@ -22,13 +22,13 @@ public class UserTableModel extends AbstractTableModel{
 		return users.get(row);
 	}
 	
-	public void addRow(String userName){
+	public synchronized void addRow(String userName){
 		users.add(userName);
 		sortUsers();
 		fireTableDataChanged();
 	}
 	
-	public void removeRow(String rowToRemove){
+	public synchronized void removeRow(String rowToRemove){
 		users.remove(rowToRemove);
 		sortUsers();
 		fireTableDataChanged();

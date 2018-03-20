@@ -26,16 +26,15 @@ public class ClientHandler implements Runnable{
 			String userName = Networking.deserializeMessage(Networking.receiveData(clientSocket)).getContents();
 			int newClientID = getAndIncrementIDCounter();
 			Networking.sendData(String.valueOf(newClientID), clientSocket);
-			beginClientThread(userName, clientSocket, newClientID);
+			ChatClient client = new ChatClient(userName, newClientID, clientSocket);
+			beginClientThread(client);
 			new Thread(new MessageHandler(newClientID, clientSocket, server)).start();
-			Message message = new Message("+" + userName);
-			message.setUpdateFromServer(true);
-			server.addMessage(message);
+			informUsersOfNewUser(userName);
+			informNewUserOfConnectedUsers(client);
 		}
 	}
 
-	private void beginClientThread(String userName, Socket clientSocket, int clientID) {
-		ChatClient client = new ChatClient(userName, clientID, clientSocket);
+	private void beginClientThread(ChatClient client) {
 		server.addClient(client);
 		new Thread(client).start();
 	}
@@ -43,5 +42,27 @@ public class ClientHandler implements Runnable{
 	public static int getAndIncrementIDCounter() {
 		return clientUniqueID++;
 	}	
+
+	private void informUsersOfNewUser(String userName) {
+		Message message = new Message("+" + userName);
+		message.setUpdateFromServer(true);
+		server.addMessage(message);
+	}
+	
+	private void informNewUserOfConnectedUsers(ChatClient client){
+		if (server.getConnectedClients().size() == 1) return; //first user to join
+		Message message = new Message("");
+		message.setUpdateFromServer(true);
+		StringBuilder csvOfUsernames = new StringBuilder("+");
+		String prefix = "";
+		for (ChatClient c : server.getConnectedClients().values()){
+			if (c == client) continue;
+			csvOfUsernames.append(prefix);
+			prefix = ",";//To avoid an extra comma in the beginning
+			csvOfUsernames.append(c.getUsername());
+		}
+		message.setContents(csvOfUsernames.toString());
+		Networking.sendMessage(message, client.getSocket());
+	}
 
 }

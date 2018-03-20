@@ -48,10 +48,8 @@ public class ChatClient implements Runnable {
 		try {
 			setID(Integer.parseInt(Networking.deserializeMessage(Networking.receiveData(getSocket())).getContents()));
 		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SocketException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
 	}
@@ -68,13 +66,7 @@ public class ChatClient implements Runnable {
 			try{
 				Message deserializedMessage = Networking.deserializeMessage(Networking.receiveData(socket));
 				if (deserializedMessage.isUpdateFromServer()){
-					String message = deserializedMessage.getContents();
-					if (message.startsWith("-")){
-						userTableModel.removeRow(message.substring(1));
-					}
-					if (message.startsWith("+")){
-						userTableModel.addRow(message.substring(1));
-					}
+					updateClientTable(deserializedMessage);
 					continue;
 				}
 				if (deserializedMessage.getOwnerUserName() != null) {
@@ -86,6 +78,18 @@ public class ChatClient implements Runnable {
 			} catch (SocketException s){
 				clientUI.appendToOutput("Disconnected from the server\n");
 				return;
+			}
+		}
+	}
+
+	private void updateClientTable(Message deserializedMessage) {
+		String message = deserializedMessage.getContents();
+		boolean isRemovingUser = message.startsWith("-");
+		boolean isAddingUsers = message.startsWith("+");
+		if (isRemovingUser)	userTableModel.removeRow(message.substring(1));
+		if (isAddingUsers){//users are sent comma separated
+			for (String s : message.substring(1).split(",")){
+				userTableModel.addRow(s);
 			}
 		}
 	}
@@ -138,6 +142,5 @@ public class ChatClient implements Runnable {
 	public void setUserTableModel(UserTableModel userTableModel) {
 		this.userTableModel = userTableModel;
 	}
-	
 	
 }

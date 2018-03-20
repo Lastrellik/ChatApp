@@ -14,7 +14,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class ConnectUI extends JFrame {
-
 	/**
 	 * 
 	 */
@@ -94,7 +93,7 @@ public class ConnectUI extends JFrame {
 				clientUI.initializeClient(txtUsername.getText().trim(), 
 									      txtServerAddress.getText().trim(), 
 									      Integer.parseInt(textServerPort.getText().trim()));
-				dispose();
+				setVisible(false);
 			}
 		});
 		btnConnect.setSelected(true);
@@ -103,7 +102,7 @@ public class ConnectUI extends JFrame {
 		JButton btnCancel = new JButton("Cancel");
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				dispose();
+				setVisible(false);
 			}
 		});
 		pnlButtonPanel.add(btnCancel);

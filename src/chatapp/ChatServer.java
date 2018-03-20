@@ -86,4 +86,8 @@ public class ChatServer implements Runnable{
 	public void setServerSocket(ServerSocket serverSocket) {
 		this.serverSocket = serverSocket;
 	}
+
+	public HashMap<Integer, ChatClient> getConnectedClients() {
+		return connectedClients;
+	}
 }
