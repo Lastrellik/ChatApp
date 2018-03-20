@@ -12,6 +12,8 @@ import javax.swing.SwingConstants;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class ConnectUI extends JFrame {
 	/**
@@ -80,9 +82,12 @@ public class ConnectUI extends JFrame {
 		pnlUsername.add(lblUsername);
 		
 		txtUsername = new JTextField();
-		txtUsername.setText("Test");
+		addWindowListener( new WindowAdapter() {
+			public void windowOpened(WindowEvent e){
+				txtUsername.requestFocus();
+			}
+		});
 		pnlUsername.add(txtUsername);
-		txtUsername.setColumns(10);
 		
 		JPanel pnlButtonPanel = new JPanel();
 		contentPane.add(pnlButtonPanel, BorderLayout.SOUTH);
