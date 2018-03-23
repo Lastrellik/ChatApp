@@ -26,22 +26,6 @@ public class ConnectUI extends JFrame {
 	private JTextField txtUsername;
 
 	/**
-	 * Launch the application.
-	 
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ConnectUI frame = new ConnectUI();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}*/
-
-	/**
 	 * Create the frame.
 	 */
 	public ConnectUI(final ClientUI clientUI) {
@@ -95,10 +79,15 @@ public class ConnectUI extends JFrame {
 		JButton btnConnect = new JButton("Connect");
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				clientUI.initializeClient(txtUsername.getText().trim(), 
-									      txtServerAddress.getText().trim(), 
-									      Integer.parseInt(textServerPort.getText().trim()));
 				setVisible(false);
+				new Thread(){
+					public void run(){
+						clientUI.appendToOutput("Connecting to " + txtServerAddress.getText().trim() + "...");
+						clientUI.initializeClient(txtUsername.getText().trim(), 
+							      txtServerAddress.getText().trim(), 
+							      Integer.parseInt(textServerPort.getText().trim()));
+					}
+				}.start();
 			}
 		});
 		btnConnect.setSelected(true);

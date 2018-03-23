@@ -45,14 +45,18 @@ public class Networking {
 	}
 	
 	public static Socket connectToServer(String hostName, int port) throws IOException {
-		Socket socket = null;
+		Socket socket = new Socket();
+		int timeoutInMillis = 5000; //10 seconds
 		try {
-			socket = new Socket(hostName, port);
-			
+			socket.connect(new InetSocketAddress(hostName, port), timeoutInMillis);
 		} catch (UnknownHostException e) {
 			throw new UnknownHostException();
-
-		} catch (IOException e) {
+		} catch (SocketTimeoutException s){
+			throw new IOException("Connection to the server timed out");
+		} catch (ConnectException c){
+			throw new IOException("Connection refused. Incorrect server address or server is offline.");
+		} catch (IOException i){
+			i.printStackTrace();
 			throw new IOException();
 		}
 		return socket;

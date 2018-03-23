@@ -137,8 +137,7 @@ public class ClientUI extends JFrame {
 			client.beginThread();
 			enableSendingMessages();
 		} catch (Exception e) {
-			alertFailedConnection(messageArea);
-			e.printStackTrace();
+			alertFailedConnection(e.getLocalizedMessage());
 			return;
 		} 
 	}
@@ -151,11 +150,11 @@ public class ClientUI extends JFrame {
 	}
 	
 	public void appendToOutput(String outputMessage){
-		messageArea.append(outputMessage);
+		messageArea.append(outputMessage + "\n");
 	}
 	
-	private void alertFailedConnection(final JTextArea txtrconnectToA) {
-		txtrconnectToA.append("Failed to connect to server\n");
+	private void alertFailedConnection(String message) {
+		appendToOutput(message);
 		disableSendingMessages();
 	}
 

@@ -72,12 +72,12 @@ public class ChatClient implements Runnable {
 				}
 				if (deserializedMessage.getOwnerUserName() != null) {
 					clientUI.appendToOutput(deserializedMessage.getOwnerUserName() + ": " + 
-											deserializedMessage.getContents() + "\n");
+											deserializedMessage.getContents());
 				} else {
-					clientUI.appendToOutput(deserializedMessage.getContents() + "\n");
+					clientUI.appendToOutput(deserializedMessage.getContents());
 				}
 			} catch (SocketException s){
-				clientUI.appendToOutput("Disconnected from the server\n");
+				clientUI.appendToOutput("Disconnected from the server");
 				return;
 			}
 		}
