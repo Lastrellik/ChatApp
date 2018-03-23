@@ -38,6 +38,7 @@ public class ChatClient implements Runnable {
 	}
 	
 	public void disconnectFromServer(){
+		userTableModel.clearUsers();
 		Networking.disconnectFromServer(socket);
 	}
 	

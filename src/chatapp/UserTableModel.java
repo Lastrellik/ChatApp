@@ -34,6 +34,10 @@ public class UserTableModel extends AbstractTableModel{
 		fireTableDataChanged();
 	}
 
+	public void clearUsers(){
+		users.clear();
+	}
+
 	@Override
 	public int getColumnCount() {
 		return 1;
