@@ -18,6 +18,7 @@ public class ClientUI extends JFrame {
 	private JTextArea messageArea;
 	private JButton btnSend;
 	private ChatClient client;
+	private JMenuItem connectMenuItem;
 	private JTable table;
 	private UserTableModel userTableModel;
 
@@ -37,7 +38,7 @@ public class ClientUI extends JFrame {
 		JMenu connectionMenu = new JMenu("Connections");
 		menuBar.add(connectionMenu);
 		
-		JMenuItem connectMenuItem = new JMenuItem("Connect");
+		connectMenuItem = new JMenuItem("Connect");
 		connectMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				showConnectUI();
@@ -51,6 +52,7 @@ public class ClientUI extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				client.disconnectFromServer();
 				disableSendingMessages();
+				enableConnectMenuItem();
 			}
 		});
 		connectionMenu.add(disconnectMenuItem);
@@ -136,8 +138,10 @@ public class ClientUI extends JFrame {
 			client.registerWithServer(username);
 			client.beginThread();
 			enableSendingMessages();
+			disableConnectMenuItem();
 		} catch (Exception e) {
 			alertFailedConnection(e.getLocalizedMessage());
+			enableConnectMenuItem();
 			return;
 		} 
 	}
@@ -166,14 +170,21 @@ public class ClientUI extends JFrame {
 		sendMessageArea.setText("");
 	}
 
-	public void enableSendingMessages() {
+	private void enableSendingMessages() {
 		sendMessageArea.setEnabled(true);
 		btnSend.setEnabled(true);
 	}
 	
-	public void disableSendingMessages() {
+	private void disableSendingMessages() {
 		sendMessageArea.setEnabled(false);
 		btnSend.setEnabled(false);
 	}
-
+	
+	private void disableConnectMenuItem(){
+		connectMenuItem.setEnabled(false);
+	}
+	
+	private void enableConnectMenuItem(){
+		connectMenuItem.setEnabled(true);
+	}
 }
