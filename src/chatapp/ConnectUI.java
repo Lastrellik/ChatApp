@@ -111,6 +111,7 @@ public class ConnectUI extends JFrame {
 			}
 		});
 		pnlButtonPanel.add(btnCancel);
+		getRootPane().setDefaultButton(btnConnect);
 	}
 
 }
