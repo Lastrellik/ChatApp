@@ -49,7 +49,7 @@ public class ConnectUI extends JFrame {
 		pnlServerPort.add(lblServerPort);
 		
 		txtServerAddress = new JTextField();
-		txtServerAddress.setText("lastrellik.noip.me");
+		txtServerAddress.setText("jasonbruderer.com");
 		pnlServerPort.add(txtServerAddress);
 		txtServerAddress.setColumns(20);
 		
