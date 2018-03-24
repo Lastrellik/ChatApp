@@ -65,7 +65,7 @@ public class ClientHandler implements Runnable{
 		StringBuilder csvOfUsernames = new StringBuilder("+");
 		String prefix = "";
 		for (ChatClient c : server.getConnectedClients().values()){
-			if (c == client) continue;
+			if (c.equals(client)) continue;
 			csvOfUsernames.append(prefix);
 			prefix = ",";//To avoid an extra comma in the beginning
 			csvOfUsernames.append(c.getUsername());

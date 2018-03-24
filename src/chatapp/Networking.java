@@ -22,15 +22,19 @@ public class Networking {
 	}
 	
 	public static String receiveData(Socket dataSocket) throws SocketException{
-		byte[] messageBuffer = new byte[1024];
+		StringBuilder data = new StringBuilder();
 		try {
-			dataSocket.getInputStream().read(messageBuffer);
+			char currentChar = 0;
+			while (currentChar != '\n'){
+				currentChar = (char) dataSocket.getInputStream().read();
+				data.append(currentChar);
+			}
 		} catch (SocketException s) {
 			throw new SocketException();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return new String(messageBuffer).trim();
+		return new String(data).trim();
 	}
 	
 	public static Message deserializeMessage(String serializedData) throws JsonSyntaxException{
@@ -39,6 +43,7 @@ public class Networking {
 			Gson gson = new Gson();
 			message = gson.fromJson(serializedData, Message.class);
 		} catch (JsonSyntaxException j){//data wasn't a message
+			j.printStackTrace();
 			throw new JsonSyntaxException("Connecting user wasn't a chat client");
 		}
 		return message;

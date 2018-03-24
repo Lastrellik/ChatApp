@@ -6,12 +6,12 @@ public class ChatApp {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		beginServer();
+		/*beginServer();
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		}
+		}*/
 		beginClientUI();
 	}
 	
